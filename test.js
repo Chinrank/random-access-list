@@ -1,4 +1,4 @@
-const { strictEqual } = require("assert");
+const { deepStrictEqual } = require("assert");
 
 const RandomAccessList = require("./index");
 
@@ -11,5 +11,11 @@ let t = RandomAccessList.fromArray(arr);
 
 for (let i = 0; i < len; i++) {
       t = t.update(i, 2 * t.get(i));
-      strictEqual(t.get(i), 2 * i);
 }
+
+const backToArr = Array.from(t);
+
+deepStrictEqual(
+      backToArr,
+      arr.map((s) => s * 2)
+);

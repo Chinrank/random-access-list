@@ -21,6 +21,12 @@ class RandomAccessList {
             return new RandomAccessList(nextInternalArr);
       }
 
+      *[Symbol.iterator]() {
+            for (let i = this.internalArr.length - 1; i >= 0; i--) {
+                  yield* traverseTree(this.internalArr[i][0]);
+            }
+      }
+
       static fromArray(arr) {
             let len = arr.length;
             let res = [];
@@ -81,6 +87,16 @@ function findInsideTree(tree, size, i) {
       }
 
       return findInsideTree(tree.r, (size - 1) / 2, i - 1 - (size - 1) / 2);
+}
+
+function* traverseTree(tree) {
+      yield tree.v;
+      if (tree.l) {
+            yield* traverseTree(tree.l);
+      }
+      if (tree.r) {
+            yield* traverseTree(tree.r);
+      }
 }
 
 function findTree(treeArr, target) {
