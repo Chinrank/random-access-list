@@ -9,16 +9,15 @@ class RandomAccessList {
       }
 
       map(cb) {
-            const res = [];
+            const res = Array(this.internalArr.length);
             let acc = 0;
 
             for (let i = this.internalArr.length - 1; i >= 0; i--) {
                   const [tree, size] = this.internalArr[i];
-                  res.push([mapTree(tree, cb, size, acc), size]);
+                  res[i] = [mapTree(tree, cb, size, acc), size];
                   acc = acc + size;
             }
 
-            res.reverse();
             return new RandomAccessList(res);
       }
 
