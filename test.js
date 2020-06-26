@@ -16,9 +16,13 @@ for (let i = 0; i < len; i++) {
       oldReses.push(nextOne);
 }
 
-const backToArr = Array.from(oldReses[oldReses.length - 1]);
+const latestRes = oldReses[oldReses.length - 1];
+
+const mapped = latestRes.map((x, i) => x * i);
+
+const backToArr = Array.from(mapped);
 
 deepStrictEqual(
       backToArr,
-      arr.map((s) => s * 2)
+      arr.map((s, i) => s * 2 * i)
 );

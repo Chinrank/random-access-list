@@ -8,6 +8,20 @@ class RandomAccessList {
             return findInsideTree(tree, size, j);
       }
 
+      map(cb) {
+            const res = [];
+            let acc = 0;
+
+            for (let i = this.internalArr.length - 1; i >= 0; i--) {
+                  const [tree, size] = this.internalArr[i];
+                  res.push([mapTree(tree, cb, size, acc), size]);
+                  acc = acc + size;
+            }
+
+            res.reverse();
+            return new RandomAccessList(res);
+      }
+
       update(i, val) {
             const [tree, size, j, treeToSearchIndex] = getTreeToOperateOn(
                   this.internalArr,
@@ -57,6 +71,20 @@ function immutableUpdateArray(arr, i, val) {
             .slice(0, i)
             .concat([val])
             .concat(arr.slice(i + 1));
+}
+
+function mapTree(tree, cb, size, idx = 0) {
+      const res = cb(tree.v, idx);
+
+      if (!tree.l) {
+            return { v: res };
+      }
+
+      return {
+            v: res,
+            l: mapTree(tree.l, cb, (size - 1) / 2, idx + 1),
+            r: mapTree(tree.r, cb, (size - 1) / 2, idx + 1 + (size - 1) / 2)
+      };
 }
 
 function updateTree(tree, size, i, val) {
