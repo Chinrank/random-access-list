@@ -13,10 +13,10 @@ class RandomAccessList {
                   this.internalArr,
                   i
             );
-            const partial = this.internalArr.slice(0, treeToSearchIndex);
-            partial.push([updateTree(tree, size, j, val), size]);
-            const nextInternalArr = partial.concat(
-                  this.internalArr.slice(treeToSearchIndex + 1)
+            const nextInternalArr = immutableUpdateArray(
+                  this.internalArr,
+                  treeToSearchIndex,
+                  [updateTree(tree, size, j, val), size]
             );
             return new RandomAccessList(nextInternalArr);
       }
@@ -26,10 +26,9 @@ class RandomAccessList {
             let res = [];
             while (len !== 0) {
                   const largestAllowableTreeSize = largestBinaryTreeSize(len);
-                  len = len - largestAllowableTreeSize;
-                  const tree = toTree(arr.slice(len));
-                  arr = arr.slice(0, len);
+                  const tree = toTree(arr, len - largestAllowableTreeSize, len);
                   res.push([tree, largestAllowableTreeSize]);
+                  len = len - largestAllowableTreeSize;
             }
             return new RandomAccessList(res);
       }
@@ -45,6 +44,13 @@ function getTreeToOperateOn(treeArr, i) {
       }
       const [tree, size] = treeArr[treeToSearchIndex];
       return [tree, size, j, treeToSearchIndex];
+}
+
+function immutableUpdateArray(arr, i, val) {
+      return arr
+            .slice(0, i)
+            .concat([val])
+            .concat(arr.slice(i + 1));
 }
 
 function updateTree(tree, size, i, val) {
@@ -89,19 +95,22 @@ function findTree(treeArr, target) {
       return [-1, 0];
 }
 
-function toTree(arr, acc = {}) {
-      const len = arr.length;
+function toTree(arr, startIndex = 0, endIndex = arr.length, acc = {}) {
+      acc.v = arr[startIndex];
 
-      acc.v = arr[0];
+      const diff = endIndex - startIndex;
 
-      if (len === 1) {
+      if (diff === 1) {
             return acc;
       }
 
       acc.l = {};
       acc.r = {};
-      toTree(arr.slice(1, (len + 1) / 2), acc.l);
-      toTree(arr.slice((len + 1) / 2), acc.r);
+
+      const leftEnd = startIndex + (diff + 1) / 2;
+
+      toTree(arr, startIndex + 1, leftEnd, acc.l);
+      toTree(arr, leftEnd, endIndex, acc.r);
 
       return acc;
 }
