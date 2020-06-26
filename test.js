@@ -23,6 +23,11 @@ const mapped = latestRes.map((x, i) => x * i);
 const backToArr = Array.from(mapped);
 
 deepStrictEqual(
+      Array.from(latestRes),
+      arr.map((s, i) => s * 2)
+);
+
+deepStrictEqual(
       backToArr,
       arr.map((s, i) => s * 2 * i)
 );
