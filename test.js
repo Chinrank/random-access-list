@@ -8,12 +8,15 @@ const arr = Array(len)
       .map((_, i) => i);
 
 let t = RandomAccessList.fromArray(arr);
+let oldReses = [t];
 
 for (let i = 0; i < len; i++) {
-      t = t.update(i, 2 * t.get(i));
+      const prevOne = oldReses[i];
+      const nextOne = prevOne.update(i, 2 * t.get(i));
+      oldReses.push(nextOne);
 }
 
-const backToArr = Array.from(t);
+const backToArr = Array.from(oldReses[oldReses.length - 1]);
 
 deepStrictEqual(
       backToArr,
