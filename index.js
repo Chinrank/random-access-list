@@ -123,7 +123,7 @@ class RandomAccessList {
             ) {
                   return new RandomAccessList({
                         h: [{ v: val }, 1],
-                        n: this.internalList.n
+                        n: this.internalList
                   });
             }
 
@@ -142,9 +142,9 @@ class RandomAccessList {
             return new RandomAccessList({
                   h: [{ v: val }, 1],
                   n: {
-                        h: this.internalList.h,
+                        h: [tree1, size1],
                         n: {
-                              h: this.internalList.n.h,
+                              h: [tree2, size2],
                               n: remainder
                         }
                   }
