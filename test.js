@@ -23,6 +23,12 @@ const mapped = latestRes.map((x, i) => x * i);
 
 const backToArr = Array.from(mapped);
 
+const arrSlowWay = [];
+
+for (let i = 0; i < len; i++) {
+      arrSlowWay.push(mapped.get(i));
+}
+
 deepStrictEqual(
       Array.from(latestRes),
       arr.map((s, i) => s * 2)
@@ -32,6 +38,8 @@ deepStrictEqual(
       backToArr,
       arr.map((s, i) => s * 2 * i)
 );
+
+deepStrictEqual(backToArr, arrSlowWay);
 
 const aFewTails = mapped.tail().tail().tail();
 

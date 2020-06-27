@@ -67,8 +67,19 @@ class RandomAccessList {
        */
 
       get(i) {
-            const [tree, size, j] = getTreeToOperateOn(this.internalList, i);
-            return findInsideTree(tree, size, j);
+            let [tree, size, j] = getTreeToOperateOn(this.internalList, i);
+
+            while (j !== 0) {
+                  size = (size - 1) / 2;
+                  if (j <= size) {
+                        tree = tree.l;
+                        j = j - 1;
+                  } else {
+                        tree = tree.r;
+                        j = j - 1 - size;
+                  }
+            }
+            return tree.v;
       }
 
       /**
