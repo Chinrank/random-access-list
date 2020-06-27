@@ -275,21 +275,19 @@ function mapTree(tree, cb, size, idx = 0) {
 }
 
 function updateTree(tree, size, i, val) {
-      let pos = i;
       let res = {};
       const start = res;
-      while (pos !== 0) {
+      while (i !== 0) {
             res.v = tree.v;
-            if (pos < size / 2) {
-                  size = (size - 1) / 2;
-                  pos = pos - 1;
+            size = (size - 1) / 2;
+            if (i <= size) {
+                  i = i - 1;
                   res.l = {};
                   res.r = tree.r;
                   tree = tree.l;
                   res = res.l;
             } else {
-                  size = (size - 1) / 2;
-                  pos = pos - 1 - size;
+                  i = i - 1 - size;
                   res.r = {};
                   res.l = tree.l;
                   tree = tree.r;
