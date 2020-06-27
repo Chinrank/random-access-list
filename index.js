@@ -1,12 +1,28 @@
+/** @template S */
 class RandomAccessList {
       constructor(internalArr) {
             this.internalArr = internalArr;
       }
 
+      /**
+       * Gets the desired index from the list.
+       *
+       * @param {number} i - The index to get
+       * @return {S}
+       */
+
       get(i) {
             const [tree, size, j] = getTreeToOperateOn(this.internalArr, i);
             return findInsideTree(tree, size, j);
       }
+
+      /**
+       * Maps over the RandomAccessList to return a new list.
+       *
+       * @template T
+       * @param {(el: S, i: number) => T} cb - The index to get
+       * @return {RandomAccessList<T>}
+       */
 
       map(cb) {
             const res = Array(this.internalArr.length);
@@ -21,6 +37,15 @@ class RandomAccessList {
             return new RandomAccessList(res);
       }
 
+      /**
+       * Returns a new RandomAccessList with the index changed to the new value.
+       *
+       * @template Q
+       * @param {number} i - The index to update
+       * @param {Q} val - The value to update to
+       * @return {RandomAccessList<S | Q>}
+       */
+
       update(i, val) {
             const [tree, size, j, treeToSearchIndex] = getTreeToOperateOn(
                   this.internalArr,
@@ -34,11 +59,25 @@ class RandomAccessList {
             return new RandomAccessList(nextInternalArr);
       }
 
+      /**
+       * Iterates over the list.
+       *
+       * @return {Iterator<S>}
+       */
+
       *[Symbol.iterator]() {
             for (let i = this.internalArr.length - 1; i >= 0; i--) {
                   yield* traverseTree(this.internalArr[i][0]);
             }
       }
+
+      /**
+       * Creates a RandomAccessList from an array.
+       *
+       * @template T
+       * @param {Array<T>} arr - The arr to convert
+       * @return {RandomAccessList<T>}
+       */
 
       static fromArray(arr) {
             let len = arr.length;
