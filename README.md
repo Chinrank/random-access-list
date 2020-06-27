@@ -31,8 +31,12 @@ const randomAccessList = RandomAccessList.fromArray(arr);
 
 const nextList = randomAccessList.update(7, 12);
 const mappedList = nextList.map((x, i) => x * i);
+const tailed = mappedList.tail().tail();
+const prepended = tailed.prepend(13).prepend(2);
 
-console.log(randomAccessList.get(7)) // 7
-console.log(nextList.get(7)) // 12
-console.log(mappedList.get(7)) // 12 * 7 = 84
+console.log(randomAccessList.get(7)); // 7
+console.log(nextList.get(7)); // 12
+console.log(mappedList.get(7)); // 12 * 7 = 84
+console.log(tailed.get(0)); // 2 * 2 = 4
+console.log(prepended.get(1)); // 13
 ```
