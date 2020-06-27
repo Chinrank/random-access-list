@@ -1,4 +1,4 @@
-const { deepStrictEqual } = require("assert");
+const { deepStrictEqual, strictEqual } = require("assert");
 
 const RandomAccessList = require("./index");
 
@@ -32,3 +32,16 @@ deepStrictEqual(
       backToArr,
       arr.map((s, i) => s * 2 * i)
 );
+
+const aFewTails = mapped.tail().tail().tail();
+
+deepStrictEqual(Array.from(aFewTails), arr.map((s, i) => s * 2 * i).slice(3));
+
+const prependABit = aFewTails
+      .prepend(52)
+      .prepend(17)
+      .prepend(12)
+      .map((x) => x + 1)
+      .tail();
+
+strictEqual(prependABit.get(0), 18);

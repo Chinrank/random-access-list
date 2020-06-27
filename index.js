@@ -1,7 +1,15 @@
+const nullLinkedList = { n: null };
+
 /** @template S */
 class RandomAccessList {
-      constructor(internalArr) {
-            this.internalArr = internalArr;
+      /**
+       * Private constructor, initial instances should be made via fromArray
+       *
+       * @private
+       */
+
+      constructor(internalList) {
+            this.internalList = internalList;
       }
 
       /**
@@ -11,10 +19,35 @@ class RandomAccessList {
        */
 
       head() {
-            if (this.internalArr.length === 0) {
+            if (this.internalList === nullLinkedList) {
                   throw new RangeError("Head of empty list");
             }
-            return this.internalArr[this.internalArr.length - 1][0].v;
+            return this.internalList.h[0].v;
+      }
+
+      /**
+       * Gets the rest of the list past the first element
+       *
+       * @return {RandomAccessList<S>}
+       */
+
+      tail() {
+            if (this.internalList === nullLinkedList) {
+                  throw new RangeError("Tail of empty list");
+            }
+
+            const [fstTree, size] = this.internalList.h;
+
+            if (size === 1) {
+                  return new RandomAccessList(this.internalList.n);
+            }
+            return new RandomAccessList({
+                  h: [fstTree.l, (size - 1) / 2],
+                  n: {
+                        h: [fstTree.r, (size - 1) / 2],
+                        n: this.internalList.n
+                  }
+            });
       }
 
       /**
@@ -23,7 +56,7 @@ class RandomAccessList {
        * @return {boolean}
        */
       hasHead() {
-            return this.internalArr.length !== 0;
+            return this.internalList === nullLinkedList;
       }
 
       /**
@@ -34,7 +67,7 @@ class RandomAccessList {
        */
 
       get(i) {
-            const [tree, size, j] = getTreeToOperateOn(this.internalArr, i);
+            const [tree, size, j] = getTreeToOperateOn(this.internalList, i);
             return findInsideTree(tree, size, j);
       }
 
@@ -47,16 +80,75 @@ class RandomAccessList {
        */
 
       map(cb) {
-            const res = Array(this.internalArr.length);
+            if (this.internalList === nullLinkedList) {
+                  return this;
+            }
             let acc = 0;
 
-            for (let i = this.internalArr.length - 1; i >= 0; i--) {
-                  const [tree, size] = this.internalArr[i];
-                  res[i] = [mapTree(tree, cb, size, acc), size];
+            let w = this.internalList;
+
+            const s = {};
+
+            let l = s;
+
+            while (w !== nullLinkedList) {
+                  const [tree, size] = w.h;
+
+                  const next = {
+                        h: [mapTree(tree, cb, size, acc), size],
+                        n: nullLinkedList
+                  };
+
+                  l.n = next;
+                  l = next;
+                  w = w.n;
+
                   acc = acc + size;
             }
 
-            return new RandomAccessList(res);
+            return new RandomAccessList(s.n);
+      }
+
+      /**
+       * Returns a new RandomAccessList with the index changed to the new value.
+       *
+       * @template Q
+       * @param {Q} val - The value to prepend
+       * @return {RandomAccessList<S | Q>}
+       */
+      prepend(val) {
+            if (
+                  this.internalList === nullLinkedList ||
+                  this.internalList.n === nullLinkedList
+            ) {
+                  return new RandomAccessList({
+                        h: [{ v: val }, 1],
+                        n: this.internalList.n
+                  });
+            }
+
+            const [tree1, size1] = this.internalList.h;
+            const [tree2, size2] = this.internalList.n.h;
+
+            const remainder = this.internalList.n.n;
+
+            if (size1 === size2) {
+                  return new RandomAccessList({
+                        h: [{ v: val, l: tree1, r: tree2 }, size1 + size2 + 1],
+                        n: remainder
+                  });
+            }
+
+            return new RandomAccessList({
+                  h: [{ v: val }, 1],
+                  n: {
+                        h: this.internalList.h,
+                        n: {
+                              h: this.internalList.n.h,
+                              n: remainder
+                        }
+                  }
+            });
       }
 
       /**
@@ -69,16 +161,40 @@ class RandomAccessList {
        */
 
       update(i, val) {
-            const [tree, size, j, treeToSearchIndex] = getTreeToOperateOn(
-                  this.internalArr,
-                  i
-            );
-            const nextInternalArr = immutableUpdateArray(
-                  this.internalArr,
-                  treeToSearchIndex,
-                  [updateTree(tree, size, j, val), size]
-            );
-            return new RandomAccessList(nextInternalArr);
+            if (i < 0) {
+                  throw new RangeError(`${i} is smaller than 0`);
+            }
+
+            let acc = 0;
+
+            let w = this.internalList;
+
+            const s = {};
+
+            let l = s;
+
+            while (w !== nullLinkedList) {
+                  const [tree, size] = w.h;
+
+                  if (acc + size > i) {
+                        const next = {
+                              h: [updateTree(tree, size, i - acc, val), size],
+                              n: w.n
+                        };
+
+                        l.n = next;
+                        return new RandomAccessList(s.n);
+                  }
+
+                  const next = { h: w.h, n: nullLinkedList };
+
+                  l.n = next;
+                  l = next;
+                  w = w.n;
+
+                  acc = acc + size;
+            }
+            throw new RangeError(`${i} is out of bounds`);
       }
 
       /**
@@ -88,8 +204,10 @@ class RandomAccessList {
        */
 
       *[Symbol.iterator]() {
-            for (let i = this.internalArr.length - 1; i >= 0; i--) {
-                  yield* traverseTree(this.internalArr[i][0]);
+            let l = this.internalList;
+            while (l !== nullLinkedList) {
+                  yield* traverseTree(l.h[0]);
+                  l = l.n;
             }
       }
 
@@ -103,34 +221,26 @@ class RandomAccessList {
 
       static fromArray(arr) {
             let len = arr.length;
-            let res = [];
+            let res = nullLinkedList;
             while (len !== 0) {
                   const largestAllowableTreeSize = largestBinaryTreeSize(len);
                   const tree = toTree(arr, len - largestAllowableTreeSize, len);
-                  res.push([tree, largestAllowableTreeSize]);
+                  res = { h: [tree, largestAllowableTreeSize], n: res };
                   len = len - largestAllowableTreeSize;
             }
             return new RandomAccessList(res);
       }
 }
 
-function getTreeToOperateOn(treeArr, i) {
+function getTreeToOperateOn(treeList, i) {
       if (i < 0) {
             throw new RangeError(`${i} is smaller than 0`);
       }
-      const [treeToSearchIndex, j] = findTree(treeArr, i);
-      if (treeToSearchIndex === -1) {
+      const [tree, size, j] = findTree(treeList, i);
+      if (tree === null) {
             throw new RangeError(`${i} is out of bounds`);
       }
-      const [tree, size] = treeArr[treeToSearchIndex];
-      return [tree, size, j, treeToSearchIndex];
-}
-
-function immutableUpdateArray(arr, i, val) {
-      return arr
-            .slice(0, i)
-            .concat([val])
-            .concat(arr.slice(i + 1));
+      return [tree, size, j];
 }
 
 function mapTree(tree, cb, size, idx = 0) {
@@ -187,16 +297,18 @@ function* traverseTree(tree) {
       }
 }
 
-function findTree(treeArr, target) {
+function findTree(treeList, target) {
       let s = 0;
-      for (let i = treeArr.length - 1; i >= 0; i--) {
-            const nextS = s + treeArr[i][1];
+      let curr = treeList;
+      while (curr !== nullLinkedList) {
+            const nextS = s + curr.h[1];
             if (nextS > target) {
-                  return [i, target - s];
+                  return [curr.h[0], curr.h[1], target - s];
             }
+            curr = curr.n;
             s = nextS;
       }
-      return [-1, 0];
+      return [null, 0, 0];
 }
 
 function toTree(arr, startIndex = 0, endIndex = arr.length, acc = {}) {
