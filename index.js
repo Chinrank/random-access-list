@@ -287,17 +287,6 @@ function updateTree(tree, size, i, val) {
       return start;
 }
 
-function findInsideTree(tree, size, i) {
-      if (i === 0) {
-            return tree.v;
-      }
-      if (i < size / 2) {
-            return findInsideTree(tree.l, (size - 1) / 2, i - 1);
-      }
-
-      return findInsideTree(tree.r, (size - 1) / 2, i - 1 - (size - 1) / 2);
-}
-
 function* traverseTree(tree) {
       yield tree.v;
       if (tree.l) {
