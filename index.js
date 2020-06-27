@@ -258,22 +258,22 @@ function mapTree(tree, cb, size, idx = 0) {
 }
 
 function updateTree(tree, size, i, val) {
-      if (i === 0) {
-            return { v: val, l: tree.l, r: tree.r };
+      let pos = i;
+      let res = { ...tree };
+      const start = res;
+      while (pos !== 0) {
+            if (pos < size / 2) {
+                  size = (size - 1) / 2;
+                  pos = pos - 1;
+                  res = res.l;
+            } else {
+                  size = (size - 1) / 2;
+                  pos = pos - 1 - size;
+                  res = res.r;
+            }
       }
-      if (i < size / 2) {
-            return {
-                  v: tree.v,
-                  l: updateTree(tree.l, (size - 1) / 2, i - 1, val),
-                  r: tree.r
-            };
-      }
-
-      return {
-            v: tree.v,
-            l: tree.l,
-            r: updateTree(tree.r, (size - 1) / 2, i - 1 - (size - 1) / 2, val)
-      };
+      res.v = val;
+      return start;
 }
 
 function findInsideTree(tree, size, i) {
