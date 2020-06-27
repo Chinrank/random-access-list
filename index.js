@@ -11,7 +11,19 @@ class RandomAccessList {
        */
 
       head() {
+            if (this.internalArr.length === 0) {
+                  throw new RangeError("Head of empty list");
+            }
             return this.internalArr[this.internalArr.length - 1][0].v;
+      }
+
+      /**
+       * Determines whether safe to call head
+       *
+       * @return {boolean}
+       */
+      hasHead() {
+            return this.internalArr.length !== 0;
       }
 
       /**

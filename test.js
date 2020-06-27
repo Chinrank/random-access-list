@@ -8,6 +8,7 @@ const arr = Array(len)
       .map((_, i) => i);
 
 let t = RandomAccessList.fromArray(arr);
+
 let oldReses = [t];
 
 for (let i = 0; i < len; i++) {
