@@ -5,6 +5,16 @@ class RandomAccessList {
       }
 
       /**
+       * Gets the first element of the list.
+       *
+       * @return {S}
+       */
+
+      head() {
+            return this.internalArr[this.internalArr.length - 1][0].v;
+      }
+
+      /**
        * Gets the desired index from the list.
        *
        * @param {number} i - The index to get
