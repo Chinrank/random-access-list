@@ -110,7 +110,7 @@ class RandomAccessList {
       }
 
       /**
-       * Returns a new RandomAccessList with the index changed to the new value.
+       * Prepend the list with the given value.
        *
        * @template Q
        * @param {Q} val - The value to prepend
