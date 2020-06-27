@@ -30,5 +30,7 @@ const randomAccessList = RandomAccessList.fromArray(arr);
 const nextList = randomAccessList.update(7, 12);
 const mappedList = nextList.map((x, i) => x * i);
 
+console.log(randomAccessList.get(7)) // 7
+console.log(nextList.get(7)) // 12
 console.log(mappedList.get(7)) // 12 * 7 = 84
 ```
