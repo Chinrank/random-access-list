@@ -1,3 +1,5 @@
+Don't use this. https://github.com/funkia/list is way better, wow that's pretty sick.
+
 This implements a Random Access List.
 
 If you are here, you probably already know what this is. But if not, it is an immutable data structure with the following
