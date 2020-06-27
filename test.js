@@ -44,4 +44,4 @@ const prependABit = aFewTails
       .map((x) => x + 1)
       .tail();
 
-strictEqual(prependABit.get(0), 18);
+strictEqual(prependABit.head(), 18);
