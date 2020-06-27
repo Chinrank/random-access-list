@@ -53,3 +53,16 @@ const prependABit = aFewTails
       .tail();
 
 strictEqual(prependABit.head(), 18);
+
+const randomAccessList = RandomAccessList.fromArray(arr);
+
+const nextList = randomAccessList.update(7, 12);
+const mappedList = nextList.map((x, i) => x * i);
+const tailed = mappedList.tail().tail();
+const prepended = tailed.prepend(13).prepend(2);
+
+strictEqual(randomAccessList.get(7), 7);
+strictEqual(nextList.get(7), 12);
+strictEqual(mappedList.get(7), 84);
+strictEqual(tailed.get(0), 4);
+strictEqual(prepended.get(1), 13);

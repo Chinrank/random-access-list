@@ -67,7 +67,24 @@ class RandomAccessList {
        */
 
       get(i) {
-            let [tree, size, j] = getTreeToOperateOn(this.internalList, i);
+            if (i < 0) {
+                  throw new RangeError(`${i} is smaller than 0`);
+            }
+            let s = 0;
+            let curr = this.internalList;
+            let [tree, size, j] = [];
+            while (curr !== nullLinkedList) {
+                  const nextS = s + curr.h[1];
+                  if (nextS > i) {
+                        [tree, size, j] = [curr.h[0], curr.h[1], i - s];
+                        break;
+                  }
+                  curr = curr.n;
+                  s = nextS;
+            }
+            if (tree === undefined) {
+                  throw new RangeError(`${i} is out of bounds`);
+            }
 
             while (j !== 0) {
                   size = (size - 1) / 2;
@@ -243,17 +260,6 @@ class RandomAccessList {
       }
 }
 
-function getTreeToOperateOn(treeList, i) {
-      if (i < 0) {
-            throw new RangeError(`${i} is smaller than 0`);
-      }
-      const [tree, size, j] = findTree(treeList, i);
-      if (tree === null) {
-            throw new RangeError(`${i} is out of bounds`);
-      }
-      return [tree, size, j];
-}
-
 function mapTree(tree, cb, size, idx = 0) {
       const res = cb(tree.v, idx);
 
@@ -270,20 +276,29 @@ function mapTree(tree, cb, size, idx = 0) {
 
 function updateTree(tree, size, i, val) {
       let pos = i;
-      let res = { ...tree };
+      let res = {};
       const start = res;
       while (pos !== 0) {
+            res.v = tree.v;
             if (pos < size / 2) {
                   size = (size - 1) / 2;
                   pos = pos - 1;
+                  res.l = {};
+                  res.r = tree.r;
+                  tree = tree.l;
                   res = res.l;
             } else {
                   size = (size - 1) / 2;
                   pos = pos - 1 - size;
+                  res.r = {};
+                  res.l = tree.l;
+                  tree = tree.r;
                   res = res.r;
             }
       }
       res.v = val;
+      res.l = tree.l;
+      res.r = tree.r;
       return start;
 }
 
@@ -295,20 +310,6 @@ function* traverseTree(tree) {
       if (tree.r) {
             yield* traverseTree(tree.r);
       }
-}
-
-function findTree(treeList, target) {
-      let s = 0;
-      let curr = treeList;
-      while (curr !== nullLinkedList) {
-            const nextS = s + curr.h[1];
-            if (nextS > target) {
-                  return [curr.h[0], curr.h[1], target - s];
-            }
-            curr = curr.n;
-            s = nextS;
-      }
-      return [null, 0, 0];
 }
 
 function toTree(arr, startIndex = 0, endIndex = arr.length, acc = {}) {
