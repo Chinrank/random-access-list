@@ -103,7 +103,7 @@ class RandomAccessList {
        * Maps over the RandomAccessList to return a new list.
        *
        * @template T
-       * @param {(el: S, i: number) => T} cb - The index to get
+       * @param {(el: S, i: number) => T} cb - The callback to map with
        * @return {RandomAccessList<T>}
        */
 
